@@ -29,8 +29,21 @@ class MessageInput extends React.Component {
     return <input type="text"
                   value={this.state.text}
                   onChange={this.onChange}
-                  onKeyPress={this.onKeyPress}/>;
+                  onKeyPress={this.onKeyPress}
+                  placeholder="Enter a message"
+                  style={styles.input}/>;
   }
 }
+
+const styles = {
+  input: {
+    width: '100%',
+    fontSize: '1em',
+    padding: '0.5em',
+    boxSizing: 'border-box',
+    border: 'none',
+    outline: 'none',
+  },
+};
 
 export default connect(undefined, MessageActions)(MessageInput);

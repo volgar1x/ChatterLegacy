@@ -10,6 +10,7 @@ const store = configureStore();
 
 const app = document.createElement('div');
 document.body.appendChild(app);
+document.body.style.margin = 0;
 
 render(
   <Provider store={store}>
