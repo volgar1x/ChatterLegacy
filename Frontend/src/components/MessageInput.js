@@ -39,7 +39,7 @@ const styles = {
   input: {
     width: '100%',
     fontSize: '1em',
-    padding: '0.5em',
+    padding: '0.8em',
     boxSizing: 'border-box',
     border: 'none',
     outline: 'none',
