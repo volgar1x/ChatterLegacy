@@ -7,8 +7,6 @@ import './fonts/Lora-Regular.css';
 
 import App from './containers/App';
 import configureStore from './store/configureStore';
-import { channel } from './store/websocket';
-import { receiveMessage } from './actions/messages';
 
 const store = configureStore();
 
@@ -22,8 +20,3 @@ render(
   </Provider>,
   app
 );
-
-channel('rooms:lobby')
-.then(channel => {
-    channel.on('shout', x => store.dispatch(receiveMessage(x)));
-});
