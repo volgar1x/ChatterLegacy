@@ -6,6 +6,10 @@ defmodule Chatter.RoomChannel do
     {:ok, assign(socket, :name, name)}
   end
 
+  def join("rooms:lobby", _, socket) do
+    {:ok, assign(socket, :name, "User-#{:random.uniform(1000)}")}
+  end
+
   # It is also common to receive messages from the client and
   # broadcast to everyone in the current topic (rooms:lobby).
   def handle_in("shout", payload, socket) do
@@ -13,7 +17,12 @@ defmodule Chatter.RoomChannel do
       Timex.DateTime.universal
       |> Timex.format!("{ISO}")
 
-    broadcast socket, "shout", Map.put(payload, "timestamp", timestamp)
+    message =
+      payload
+      |> Map.put("timestamp", timestamp)
+      |> Map.put("author", socket.assigns.name)
+
+    broadcast socket, "shout", message
 
     {:noreply, socket}
   end
