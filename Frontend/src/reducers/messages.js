@@ -1,12 +1,9 @@
-import { List } from 'immutable';
-import { ADD_MESSAGE } from '../actions/messages';
-import moment from 'moment';
+import { RECEIVE_MESSAGE } from '../actions/messages';
 
-function messages(state = List(), action) {
+function messages(state = [], action) {
   switch (action.type) {
-    case ADD_MESSAGE:
-      const timestamp = moment();
-      return state.push({...action.message, timestamp});
+    case RECEIVE_MESSAGE:
+      return [...state, action.message];
   }
 
   return state;

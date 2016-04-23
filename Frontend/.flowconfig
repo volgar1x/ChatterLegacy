@@ -1,6 +1,6 @@
 [ignore]
 .*/_build/.*
-.*/node_modules/.*
+.*/node_modules/fbjs/.*
 
 [include]
 
@@ -8,6 +8,7 @@
 
 [options]
 esproposal.class_static_fields=enable
+esproposal.class_instance_fields=enable
 
 [version]
 ^0.22.1

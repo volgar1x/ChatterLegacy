@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import moment from 'moment';
 
 class Messages extends React.Component {
   componentDidMount() {
@@ -28,7 +29,7 @@ class Messages extends React.Component {
       <li key={key} style={styles.message.container}>
         {author}
         <span style={styles.message.text}>{message.text}</span>
-        <span style={styles.message.timestamp}>{message.timestamp.fromNow()}</span>
+        <span style={styles.message.timestamp}>{moment(message.timestamp).fromNow()}</span>
       </li>
     );
   }
@@ -68,7 +69,7 @@ const styles = {
       fontFamily: 'Lora, serif',
     },
     timestamp: {
-      width: '10%',
+      width: '10em',
       textAlign: 'right',
       color: '#B0B0B0',
       fontFamily: 'sans-serif',
