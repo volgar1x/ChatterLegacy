@@ -7,6 +7,7 @@ import MessageInput from '../components/messages/Input';
 import Messages from '../components/messages/List';
 import Loading from '../components/Loading';
 import ConnectForm from '../components/ConnectForm';
+import RoomList from '../components/RoomList';
 
 class App extends React.Component {
   render() {
@@ -20,6 +21,9 @@ class App extends React.Component {
 
     return (
       <div style={styles.container}>
+        <div style={styles.rooms}>
+          <RoomList/>
+        </div>
         <div style={styles.messages}>
           <Messages/>
         </div>
