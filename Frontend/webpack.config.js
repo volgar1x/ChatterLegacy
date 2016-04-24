@@ -1,14 +1,15 @@
+var path = require('path');
 var webpack = require('webpack');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
-  context: __dirname + "/src",
+  context: path.join(__dirname, "src"),
   entry: [
     './index',
   ],
   output: {
-    path: __dirname + "/_build",
+    path: path.join(__dirname, "_build"),
     filename: "bundle.js",
   },
   module: {
