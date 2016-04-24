@@ -19,8 +19,15 @@ defmodule Chatter.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
+  def connect(%{"username" => username}, socket) when byte_size(username) > 0 do
+    socket
+    |> assign(:username, username)
+    |> ok
+  end
   def connect(_params, socket) do
-    {:ok, socket}
+    socket
+    |> assign(:username, "User-#{:random.uniform(1000)}")
+    |> ok
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:
@@ -34,4 +41,6 @@ defmodule Chatter.UserSocket do
   #
   # Returning `nil` makes this socket anonymous.
   def id(_socket), do: nil
+
+  defp ok(x), do: {:ok, x}
 end

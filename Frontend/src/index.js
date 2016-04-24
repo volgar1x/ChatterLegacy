@@ -20,3 +20,7 @@ render(
   </Provider>,
   app
 );
+
+
+import * as ConnectionActions from './actions/connection';
+store.dispatch(ConnectionActions.connect('ws://localhost:4000/socket', ''));

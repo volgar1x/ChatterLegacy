@@ -1,9 +1,11 @@
 import { combineReducers } from 'redux';
 
-import messages from './messages';
+import connection from './connection';
+import rooms from './rooms';
 
 const rootReducer = combineReducers({
-  messages,
+  connection,
+  rooms,
 });
 
 export default rootReducer;

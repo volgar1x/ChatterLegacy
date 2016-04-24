@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { sendMessage } from '../actions/messages';
+import * as RoomActions from '../actions/rooms';
 
 class MessageInput extends React.Component {
   constructor(props) {
@@ -17,7 +17,7 @@ class MessageInput extends React.Component {
 
   onKeyPress = (e) => {
     if (e.key === 'Enter') {
-      sendMessage({text: this.state.text});
+      this.props.startSendingMessage({text: this.state.text});
       this.setState({text: ''});
     }
   };
@@ -43,4 +43,4 @@ const styles = {
   },
 };
 
-export default MessageInput;
+export default connect(null, RoomActions)(MessageInput);

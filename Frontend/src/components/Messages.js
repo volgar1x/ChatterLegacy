@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import moment from 'moment';
 
 class Messages extends React.Component {
   componentDidMount() {
@@ -15,24 +14,26 @@ class Messages extends React.Component {
   render() {
     return (
       <ul ref="messages" style={styles.messages}>
-        {this.props.messages.map(this.renderMessage.bind(this))}
+        {this.props.messages.map(this.renderMessage)}
       </ul>
     );
   }
 
-  renderMessage(message, key) {
-    const author = !!message.author
-      ? <span style={styles.message.author}>{message.author}</span>
-      : <span style={{...styles.message.author, ...styles.message.authorMe}}>me</span>;
-
+  renderMessage = ({author, text, timestamp}, key) => {
     return (
       <li key={key} style={styles.message.container}>
-        {author}
-        <span style={styles.message.text}>{message.text}</span>
-        <span style={styles.message.timestamp}>{moment(message.timestamp).fromNow()}</span>
+        {this.renderMessageAuthor(author)}
+        <span style={styles.message.text}>{text}</span>
+        <span style={styles.message.timestamp}>{timestamp.fromNow()}</span>
       </li>
     );
   }
+
+  renderMessageAuthor = (author) => {
+    return author !== this.props.me
+      ? <span style={styles.message.author}>{author}</span>
+      : <span style={{...styles.message.author, ...styles.message.authorMe}}>me</span>;
+  };
 
   componentDidUpdate() {
     this.refs.messages.scrollIntoView(false);
@@ -79,8 +80,11 @@ const styles = {
   },
 };
 
-function mapStateToProps({ messages }) {
-  return { messages };
+function mapStateToProps({ connection: { username }, rooms: { currentRoom, rooms } }) {
+  return {
+    messages: rooms.getIn([currentRoom, 'messages']),
+    me: username,
+  };
 }
 
 export default connect(mapStateToProps)(Messages);
