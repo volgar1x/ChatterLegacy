@@ -4,19 +4,27 @@ import { connect } from 'react-redux';
 import * as ConnectionActions from '../actions/connection';
 
 class ConnectForm extends React.Component {
-  state = {
-    username: '',
-    server: 'ws://localhost:4000/socket',
-  };
+  constructor(props) {
+    super(props);
+
+    if (window.localStorage && window.localStorage['ConnectForm']) {
+      this.state = JSON.parse(window.localStorage['ConnectForm']);
+    } else {
+      this.state = {
+        username: '',
+        server: 'localhost:4000',
+      };
+    }
+  }
 
   render() {
     return (
       <div style={styles.container}>
-        <div style={styles.form}>
+        <form style={styles.form} onSubmit={this.onSubmit}>
 
           <div style={styles.inputGroup}>
             <label htmlFor="username" style={styles.label}>Username</label>
-            <input type="text"
+            <input type="text" required
                    id="username"
                    value={this.state.username}
                    onChange={this.onChange}
@@ -25,18 +33,18 @@ class ConnectForm extends React.Component {
 
           <div style={styles.inputGroup}>
             <label htmlFor="server" style={styles.label}>Server URL</label>
-            <input type="text"
+            <input type="text" required
                    id="server"
                    value={this.state.server}
                    onChange={this.onChange}
                    style={styles.input}/>
           </div>
 
-          <button onClick={this.onConnect} style={styles.button}>
+          <button type="submit" style={styles.button}>
             Connect
           </button>
 
-        </div>
+        </form>
       </div>
     );
   }
@@ -47,8 +55,16 @@ class ConnectForm extends React.Component {
     });
   };
 
-  onConnect = (e) => {
-    this.props.connect(this.state.server, this.state.username);
+  onSubmit = (e) => {
+    e.preventDefault();
+
+    if (window.localStorage) {
+      window.localStorage['ConnectForm'] = JSON.stringify(this.state);
+    }
+    
+    this.props.connect(`ws://${this.state.server}/socket`, this.state.username);
+
+    return false;
   };
 }
 
