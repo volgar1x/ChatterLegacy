@@ -21,7 +21,6 @@ export function receiveMessage(room, message) {
 
 export function startJoiningRoom(room) {
   return (dispatch, getState) => {
-    console.log(`joining room ${room}`)
     const {connection: {socket}} = getState();
 
     const channel = socket.channel(`rooms:${room}`);
