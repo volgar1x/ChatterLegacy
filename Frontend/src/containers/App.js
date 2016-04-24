@@ -6,9 +6,14 @@ import * as RoomActions from '../actions/rooms';
 import MessageInput from '../components/MessageInput';
 import Messages from '../components/Messages';
 import Loading from '../components/Loading';
+import ConnectForm from '../components/ConnectForm';
 
 class App extends React.Component {
   render() {
+    if (!this.props.connection.connected) {
+      return <ConnectForm/>;
+    }
+
     if (!this.props.ready) {
       return <Loading fullScreen label="Connecting to room"/>;
     }
@@ -26,7 +31,7 @@ class App extends React.Component {
   }
 
   componentDidUpdate() {
-    if (this.props.connected && !this.props.ready) {
+    if (this.props.connection.connected && !this.props.ready) {
       this.props.startJoiningRoom('lobby');
     }
   }
@@ -48,9 +53,9 @@ const styles = {
   },
 };
 
-function mapStateToProps({ connection: { connected }, rooms: { currentRoom, rooms } }) {
+function mapStateToProps({ connection, rooms: { currentRoom, rooms } }) {
   return {
-    connected,
+    connection,
     ready: rooms.has(currentRoom),
   };
 }
