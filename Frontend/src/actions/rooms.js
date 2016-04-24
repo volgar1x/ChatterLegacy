@@ -2,6 +2,7 @@ export const JOIN_ROOM = 'JOIN_ROOM';
 export const LEAVE_ROOM = 'LEAVE_ROOM';
 export const FOCUS_ROOM = 'FOCUS_ROOM';
 export const RECEIVE_MESSAGE = 'RECEIVE_MESSAGE';
+export const RECEIVE_EVENT = 'RECEIVE_EVENT';
 
 export function joinRoom(room, channel) {
   return { type: JOIN_ROOM, room, channel };
@@ -19,12 +20,17 @@ export function receiveMessage(room, message) {
   return { type: RECEIVE_MESSAGE, room, message };
 }
 
+export function receiveEvent(room, event) {
+  return { type: RECEIVE_EVENT, room, event };
+}
+
 export function startJoiningRoom(room) {
   return (dispatch, getState) => {
     const {connection: {socket}} = getState();
 
     const channel = socket.channel(`rooms:${room}`);
     channel.onClose(() => dispatch(leaveRoom(room)));
+    channel.on('event', event => dispatch(receiveEvent(room, event)));
     channel.on('shout', message => dispatch(receiveMessage(room, message)));
     channel.join().receive('ok', () => dispatch(joinRoom(room, channel)));
   };
