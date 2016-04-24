@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import * as RoomActions from '../actions/rooms';
 
-class MessageInput extends React.Component {
+import * as RoomActions from '../../actions/rooms';
+
+class Input extends React.Component {
   constructor(props) {
     super(props);
 
@@ -43,4 +44,4 @@ const styles = {
   },
 };
 
-export default connect(null, RoomActions)(MessageInput);
+export default connect(null, RoomActions)(Input);

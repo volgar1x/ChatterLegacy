@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import * as RoomActions from '../actions/rooms';
 
-import MessageInput from '../components/MessageInput';
+import MessageInput from '../components/messages/Input';
 import Messages from '../components/messages/List';
 import Loading from '../components/Loading';
 import ConnectForm from '../components/ConnectForm';
