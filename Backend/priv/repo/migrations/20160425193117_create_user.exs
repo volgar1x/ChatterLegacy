@@ -3,14 +3,16 @@ defmodule Chatter.Repo.Migrations.CreateUser do
 
   def change do
     create table(:users) do
-      add :email, :string
-      add :password_hash, :string
-      add :username, :string
-      add :firstname, :string
-      add :lastname, :string
+      add :email, :string, null: false
+      add :password_hash, :string, null: false
+      add :username, :string, null: false
+      add :firstname, :string, null: false
+      add :lastname, :string, null: false
 
       timestamps
     end
 
+    create unique_index(:users, [:email])
+    create unique_index(:users, [:username])
   end
 end

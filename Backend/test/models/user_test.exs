@@ -27,6 +27,30 @@ defmodule Chatter.UserTest do
   end
 
   test "json" do
-    assert "{\"username\":\"test\"}" == Poison.encode!(%User{username: "test"})
+    assert "{\"username\":\"test\",\"id\":null}" == Poison.encode!(%User{username: "test"})
+  end
+
+  test "email is unique" do
+    changeset =
+      %User{}
+      |> User.changeset(@valid_attrs)
+      |> User.encrypt_password
+
+    Repo.insert! changeset
+
+    assert {:error, changeset} = Repo.insert(changeset)
+    assert {:email, "has already been taken"} in changeset.errors
+  end
+
+  test "username is unique" do
+    changeset =
+      %User{}
+      |> User.changeset(@valid_attrs)
+      |> User.encrypt_password
+
+    Repo.insert! changeset
+
+    assert {:error, changeset} = Repo.insert(changeset)
+    assert {:email, "has already been taken"} in changeset.errors
   end
 end

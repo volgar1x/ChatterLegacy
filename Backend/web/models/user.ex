@@ -1,7 +1,7 @@
 defmodule Chatter.User do
   use Chatter.Web, :model
 
-  @derive {Poison.Encoder, only: [:username]}
+  @derive {Poison.Encoder, only: [:id, :username]}
 
   schema "users" do
     field :email, :string
@@ -27,12 +27,13 @@ defmodule Chatter.User do
   def changeset(model, params \\ :empty) do
     model
     |> cast(params, @required_fields, @optional_fields)
+    |> unique_constraint(:email)
+    |> unique_constraint(:username)
   end
 
   def update_password(user, params) do
     user
-    |> cast(params, ~w(password old_password))
-    |> validate_password(:old_password)
+    |> cast(params, ~w(password))
     |> validate_length(:password, min: 6)
     |> encrypt_password
   end

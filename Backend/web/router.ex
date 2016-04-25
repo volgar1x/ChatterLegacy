@@ -21,5 +21,7 @@ defmodule Chatter.Router do
 
   scope "/api", Chatter do
     pipe_through :api
+
+    resources "/users", UserController
   end
 end
