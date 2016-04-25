@@ -1,6 +1,8 @@
 defmodule Chatter.User do
   use Chatter.Web, :model
 
+  @derive {Poison.Encoder, only: [:username]}
+
   schema "users" do
     field :email, :string
     field :old_password, :string, virtual: true

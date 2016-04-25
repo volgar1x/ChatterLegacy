@@ -25,4 +25,8 @@ defmodule Chatter.UserTest do
     assert User.valid_password?(changeset.changes[:password_hash], "hello")
     refute User.valid_password?(changeset.changes[:password_hash], "invalid")
   end
+
+  test "json" do
+    assert "{\"username\":\"test\"}" == Poison.encode!(%User{username: "test"})
+  end
 end
