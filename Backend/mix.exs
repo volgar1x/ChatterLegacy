@@ -38,7 +38,8 @@ defmodule Chatter.Mixfile do
      {:timex, "~> 2.1"},
      {:timex_ecto, "~> 1.0"},
      {:poison, "~> 1.5"},
-     {:ex_admin, "~> 0.7"}]
+     {:ex_admin, "~> 0.7"},
+     {:secure_random, "~> 0.2.0"}]
   end
 
   # Aliases are shortcut or tasks specific to the current project.

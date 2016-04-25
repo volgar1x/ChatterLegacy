@@ -15,4 +15,14 @@ defmodule Chatter.UserTest do
     changeset = User.changeset(%User{}, @invalid_attrs)
     refute changeset.valid?
   end
+
+  test "encrypt password" do
+    changeset =
+      %User{}
+      |> Ecto.Changeset.change(password: "hello")
+      |> User.encrypt_password
+
+    assert User.valid_password?(changeset.changes[:password_hash], "hello")
+    refute User.valid_password?(changeset.changes[:password_hash], "invalid")
+  end
 end

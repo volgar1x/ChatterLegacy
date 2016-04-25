@@ -4,7 +4,7 @@ defmodule Chatter.Repo.Migrations.CreateUser do
   def change do
     create table(:users) do
       add :email, :string
-      add :password, :string
+      add :password_hash, :string
       add :username, :string
       add :firstname, :string
       add :lastname, :string
