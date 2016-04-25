@@ -27,3 +27,14 @@ import_config "#{Mix.env}.exs"
 config :phoenix, :generators,
   migration: true,
   binary_id: false
+
+config :xain, :quote, "'"
+config :xain, :after_callback, {Phoenix.HTML, :raw}
+
+config :ex_admin,
+  repo: Chatter.Repo,
+  module: Chatter,
+  modules: [
+    Chatter.ExAdmin.Dashboard,
+    Chatter.ExAdmin.User,
+  ]

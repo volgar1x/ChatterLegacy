@@ -19,7 +19,7 @@ defmodule Chatter.Mixfile do
   def application do
     [mod: {Chatter, []},
      applications: [:phoenix, :cowboy, :logger, :gettext,
-                    :phoenix_ecto, :postgrex, :timex]]
+                    :phoenix_ecto, :postgrex, :timex, :timex_ecto]]
   end
 
   # Specifies which paths to compile per environment.
@@ -30,12 +30,15 @@ defmodule Chatter.Mixfile do
   #
   # Type `mix help deps` for examples and options.
   defp deps do
-    [{:phoenix, "~> 1.1.0"},
+    [{:phoenix, "~> 1.1"},
      {:phoenix_ecto, "~> 2.0"},
      {:postgrex, ">= 0.0.0"},
      {:gettext, "~> 0.11"},
      {:cowboy, "~> 1.0"},
-     {:timex, "~> 2.1"}]
+     {:timex, "~> 2.1"},
+     {:timex_ecto, "~> 1.0"},
+     {:poison, "~> 1.5"},
+     {:ex_admin, "~> 0.7"}]
   end
 
   # Aliases are shortcut or tasks specific to the current project.
