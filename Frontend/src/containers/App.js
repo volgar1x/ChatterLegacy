@@ -47,6 +47,7 @@ const styles = {
     flexDirection: 'column',
     width: '100vw',
     height: '100vh',
+    overflow: 'hidden',
   },
   input: {
     borderTop: '1px solid black',

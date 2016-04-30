@@ -1,4 +1,5 @@
 import React from 'react';
+import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import * as RoomActions from '../actions/rooms';
 
@@ -25,8 +26,8 @@ class JoinModal extends React.Component {
       <Modal showing={this.props.showing} onClose={this.onClose}>
         <form onSubmit={this.onSubmit} style={styles.modal.form}>
           <label htmlFor="room">Room</label>
-          <input type="text" required autofocus
-                 id="room"
+          <input type="text" required
+                 id="room" ref="input"
                  value={this.state.room}
                  onChange={this.onChange}/>
 
@@ -34,6 +35,12 @@ class JoinModal extends React.Component {
         </form>
       </Modal>
     );
+  }
+
+  componentDidUpdate() {
+    if (this.props.showing) {
+      findDOMNode(this.refs.input).focus();      
+    }
   }
 
   onChange = (e) => {
@@ -81,7 +88,7 @@ class Room extends React.Component {
     e.preventDefault();
 
     if (!this.props.isCurrent) {
-      this.props.onLeave(this.props.room);      
+      this.props.onLeave(this.props.room);
     }
 
     return false;
