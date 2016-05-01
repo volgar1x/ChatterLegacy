@@ -25,6 +25,7 @@ export default function getRoutes(store) {
           }
         },
         childRoutes: [
+          { path: 'sign-in/:room', component: ConnectForm },
           { path: 'sign-in', component: ConnectForm },
         ],
       },
@@ -33,11 +34,15 @@ export default function getRoutes(store) {
           const {app: {connection: {connected}}} = store.getState();
 
           if (!connected) {
-            replace('/sign-in');
+            if (nextState.params.room) {
+              replace(`/sign-in/${nextState.params.room}`)
+            } else {
+              replace('/sign-in');
+            }
           }
         },
         childRoutes: [
-          { path: 'rooms/:name', component: Room },
+          { path: 'rooms/:room', component: Room },
         ],
       },
     ],

@@ -75,7 +75,8 @@ class ConnectForm extends React.Component {
     this.props.connect(
       `ws://${this.state.server}/socket`,
       this.state.email,
-      this.state.password
+      this.state.password,
+      this.props.params.room
     );
 
     return false;

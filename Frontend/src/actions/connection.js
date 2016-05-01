@@ -22,7 +22,7 @@ export function connectionError(event) {
   return {type: CONNECTION_ERROR, event};
 }
 
-export function connect(url, email, password) {
+export function connect(url, email, password, room = 'lobby') {
   return dispatch => {
     dispatch(connecting());
 
@@ -30,7 +30,7 @@ export function connect(url, email, password) {
 
     socket.onOpen(() => {
       dispatch(connected(socket));
-      dispatch(startJoiningRoom('lobby'));
+      dispatch(startJoiningRoom(room));
     });
 
     socket.onClose((event) => {

@@ -11,7 +11,7 @@ import RoomList from '../components/RoomList';
 
 class App extends React.Component {
   render() {
-    const room = this.props.rooms.get(this.props.params.name);
+    const room = this.props.rooms.get(this.props.params.room);
 
     if (typeof room === 'undefined') {
       return <Loading fullScreen label="Connecting to room"/>;
