@@ -4,26 +4,42 @@ import ConnectForm from './components/ConnectForm';
 import Home from './components/Home';
 import Room from './components/Room';
 
-export default {
-  path: '/',
-  component: App,
-  indexRoute: { component: Home },
-  childRoutes: [
-    {// un-authenticated
-      // onEnter(nextState, replace, cb) {
-      //   console.log(arguments);
-      // },
-      childRoutes: [
-        { path: 'sign-in', component: ConnectForm },
-      ],
-    },
-    {// authenticated
-      // onEnter(nextState, replace, cb) {
-      //   console.log(arguments);
-      // },
-      childRoutes: [
-        { path: 'rooms/:name', component: Room },
-      ],
-    },
-  ],
-};
+export default function getRoutes(store) {
+  return {
+    path: '/',
+    component: App,
+    indexRoute: { component: Home },
+    childRoutes: [
+      {// un-authenticated
+        onEnter(nextState, replace) {
+          const {app: {rooms, connection: {connected}}} = store.getState();
+
+          if (connected) {
+            let room;
+            if (rooms.length) {
+              room = rooms.keySeq().first();
+            } else {
+              room = 'lobby';
+            }
+            replace(`/rooms/${room}`);
+          }
+        },
+        childRoutes: [
+          { path: 'sign-in', component: ConnectForm },
+        ],
+      },
+      {// authenticated
+        onEnter(nextState, replace) {
+          const {app: {connection: {connected}}} = store.getState();
+
+          if (!connected) {
+            replace('/sign-in');
+          }
+        },
+        childRoutes: [
+          { path: 'rooms/:name', component: Room },
+        ],
+      },
+    ],
+  };
+}

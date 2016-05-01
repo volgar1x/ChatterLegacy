@@ -7,11 +7,12 @@ import { syncHistoryWithStore } from 'react-router-redux';
 
 import './fonts/Lora-Regular.css';
 
-import routes from './routes';
+import getRoutes from './routes';
 import configureStore from './store/configureStore';
 
 const store = configureStore(undefined, hashHistory);
 const history = syncHistoryWithStore(hashHistory, store);
+const routes = getRoutes(store);
 
 const app = document.createElement('div');
 document.body.appendChild(app);
