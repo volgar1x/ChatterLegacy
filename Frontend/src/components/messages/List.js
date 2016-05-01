@@ -55,11 +55,4 @@ const styles = {
   },
 };
 
-function mapStateToProps({ connection: { username }, rooms: { currentRoom, rooms } }) {
-  return {
-    feed: rooms.getIn([currentRoom, 'feed']),
-    me: username,
-  };
-}
-
-export default connect(mapStateToProps)(List);
+export default List;

@@ -9,41 +9,18 @@ import {
   RECEIVE_EVENT,
 } from '../actions/rooms';
 
-const initial = {
-  currentRoom: null,
-  rooms: Map(),
-};
+const initial = Map();
 
 export default function rooms(state = initial, action) {
   switch (action.type) {
     case JOIN_ROOM:
-      return {
-        ...state,
-        currentRoom: action.room,
-        rooms: state.rooms.set(action.room, Map({
-          channel: action.channel,
-          feed: List(),
-        })),
-      };
+      return state.set(action.room, Map({
+        channel: action.channel,
+        feed: List(),
+      }));
 
     case LEAVE_ROOM:
-      return {
-        ...state,
-
-        currentRoom:
-          state.currentRoom === action.room
-          ? state.rooms.keySeq().get(0, null)
-          : state.currentRoom,
-
-        rooms: state.rooms.remove(action.room),
-      };
-
-    case FOCUS_ROOM:
-      if (!state.rooms.has(action.room)) {
-        return state;
-      }
-
-      return { ...state, currentRoom: action.room };
+      return state.rooms.remove(action.room);
 
     case RECEIVE_MESSAGE:
       const messageItem = {
@@ -52,12 +29,8 @@ export default function rooms(state = initial, action) {
         timestamp: moment(action.message.timestamp),
       };
 
-      return {
-        ...state,
-
-        rooms: state.rooms.updateIn([action.room, 'feed'],
-          feed => feed.push(messageItem)),
-      };
+      return state.updateIn([action.room, 'feed'],
+          feed => feed.push(messageItem));
 
     case RECEIVE_EVENT:
       const eventItem = {
@@ -66,13 +39,9 @@ export default function rooms(state = initial, action) {
         timestamp: moment(action.event.timestamp),
       };
 
-      return {
-        ...state,
-
-        rooms: state.rooms.updateIn([action.room, 'feed'],
-          feed => feed.push(eventItem)),
-      };
+      return state.updateIn([action.room, 'feed'],
+          feed => feed.push(eventItem));
   }
 
-  return initial;
+  return state;
 }

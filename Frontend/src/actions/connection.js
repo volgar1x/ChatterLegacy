@@ -30,6 +30,7 @@ export function connect(url, username) {
 
     socket.onOpen(() => {
       dispatch(connected(socket));
+      dispatch(startJoiningRoom('lobby'));
     });
 
     socket.onClose((event) => {

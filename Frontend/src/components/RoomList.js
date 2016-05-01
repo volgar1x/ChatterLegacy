@@ -1,6 +1,8 @@
 import React from 'react';
 import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
+import { Link } from 'react-router';
+
 import * as RoomActions from '../actions/rooms';
 
 import Modal from './Modal';
@@ -39,7 +41,7 @@ class JoinModal extends React.Component {
 
   componentDidUpdate() {
     if (this.props.showing) {
-      findDOMNode(this.refs.input).focus();      
+      findDOMNode(this.refs.input).focus();
     }
   }
 
@@ -60,40 +62,11 @@ class JoinModal extends React.Component {
   };
 }
 
-class Room extends React.Component {
-  render() {
-    const style = Object.assign({},
-      styles.room,
-      this.props.isCurrent ? styles.currentRoom : {});
-
-    const leaveButton = !this.props.label && <a href="#" onClick={this.onLeave} style={styles.leaveRoom}>x</a>;
-
-    return (
-      <a href="#" style={style} onClick={this.onClick}>
-        {this.props.label || this.props.room}
-        {leaveButton}
-      </a>
-    );
-  }
-
-  onClick = (e) => {
-    e.preventDefault();
-
-    this.props.onClick(this.props.room);
-
-    return false;
-  };
-
-  onLeave = (e) => {
-    e.preventDefault();
-
-    if (!this.props.isCurrent) {
-      this.props.onLeave(this.props.room);
-    }
-
-    return false;
-  };
-}
+const Room = ({ label, room }) => (
+  <Link to={`/rooms/${room}`} style={styles.room} activeStyle={styles.currentRoom}>
+    #{label || room}
+  </Link>
+);
 
 class RoomList extends React.Component {
   state = {
@@ -105,7 +78,7 @@ class RoomList extends React.Component {
       <div style={styles.container}>
         {this.props.rooms.map(this.renderRoom)}
 
-        <Room label="+" onClick={this.onStartJoining}/>
+        <a href="#" onClick={this.onStartJoining} style={styles.room}>+</a>
 
         <JoinModal showing={this.state.joinRequested} onSubmit={this.onJoin}/>
       </div>
@@ -113,17 +86,11 @@ class RoomList extends React.Component {
   }
 
   renderRoom = (room, key) => {
-    return <Room key={key} room={room}
-                 onClick={this.onFocus}
-                 onLeave={this.onLeave}
-                 isCurrent={room == this.props.currentRoom}/>;
+    return <Room key={key} room={room}/>;
   };
 
-  onFocus = (room) => {
-    this.props.focusRoom(room);
-  };
-
-  onStartJoining = () => {
+  onStartJoining = (e) => {
+    e.preventDefault();
     this.setState({joinRequested: true});
   };
 
@@ -132,10 +99,6 @@ class RoomList extends React.Component {
     if (typeof room !== 'undefined') {
       this.props.startJoiningRoom(room);
     }
-  };
-
-  onLeave = (room) => {
-    this.props.startLeavingRoom(room);
   };
 }
 
@@ -175,9 +138,8 @@ const styles = {
   },
 };
 
-function mapStateToProps({ rooms: { currentRoom, rooms } }) {
+function mapStateToProps({ app: { rooms } }) {
   return {
-    currentRoom,
     rooms: rooms.keySeq(),
   };
 }

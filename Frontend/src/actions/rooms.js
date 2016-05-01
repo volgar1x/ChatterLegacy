@@ -1,3 +1,5 @@
+import { replace } from 'react-router-redux';
+
 export const JOIN_ROOM = 'JOIN_ROOM';
 export const LEAVE_ROOM = 'LEAVE_ROOM';
 export const FOCUS_ROOM = 'FOCUS_ROOM';
@@ -13,7 +15,7 @@ export function leaveRoom(room) {
 }
 
 export function focusRoom(room) {
-  return { type: FOCUS_ROOM, room };
+  return replace(`/rooms/${room}`);
 }
 
 export function receiveMessage(room, message) {
@@ -26,19 +28,23 @@ export function receiveEvent(room, event) {
 
 export function startJoiningRoom(room) {
   return (dispatch, getState) => {
-    const {connection: {socket}} = getState();
+    const {app: {connection: {socket}}} = getState();
 
     const channel = socket.channel(`rooms:${room}`);
     channel.onClose(() => dispatch(leaveRoom(room)));
-    channel.on('event', event => dispatch(receiveEvent(room, event)));
-    channel.on('shout', message => dispatch(receiveMessage(room, message)));
-    channel.join().receive('ok', () => dispatch(joinRoom(room, channel)));
+    channel.join().receive('ok', () => {
+      dispatch(joinRoom(room, channel));
+      dispatch(focusRoom(room));
+
+      channel.on('event', event => dispatch(receiveEvent(room, event)));
+      channel.on('shout', message => dispatch(receiveMessage(room, message)));
+    });
   };
 }
 
 export function startLeavingRoom(room) {
   return (dispatch, getState) => {
-    const {rooms: {rooms}} = getState();
+    const {app: {rooms}} = getState();
 
     const channel = rooms.getIn([room, 'channel']);
     channel.leave();
@@ -47,7 +53,12 @@ export function startLeavingRoom(room) {
 
 export function startSendingMessage(message) {
   return (dispatch, getState) => {
-    const {rooms: {rooms, currentRoom}} = getState();
+    const {app: {rooms}, routing: {locationBeforeTransitions: {pathname}}} = getState();
+
+    if (pathname.indexOf('/rooms/') < 0) {
+      return;
+    }
+    const currentRoom = pathname.substring('/rooms/'.length);
 
     const channel = rooms.getIn([currentRoom, 'channel']);
     channel.push('shout', message);
