@@ -11,7 +11,8 @@ class ConnectForm extends React.Component {
       this.state = JSON.parse(window.localStorage['ConnectForm']);
     } else {
       this.state = {
-        username: '',
+        email: '',
+        password: '',
         server: 'localhost:4000',
       };
     }
