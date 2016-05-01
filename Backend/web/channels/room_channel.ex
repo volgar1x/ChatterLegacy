@@ -1,6 +1,8 @@
 defmodule Chatter.RoomChannel do
   use Chatter.Web, :channel
-  require Logger
+
+  alias Chatter.Repo
+  alias Chatter.Room
 
   def join("rooms:" <> room, _params, socket) do
     send self, {:after_join, room}
@@ -9,19 +11,27 @@ defmodule Chatter.RoomChannel do
   end
 
   def terminate({:shutdown, :left}, socket) do
-    broadcast socket, "event",
+    broadcast_and_log socket, "event",
       %{"timestamp" => timestamp,
         "text" => "#{socket.assigns.user.username} has left"}
   end
 
   def terminate(_, socket) do
-    broadcast socket, "event",
+    broadcast_and_log socket, "event",
       %{"timestamp" => timestamp,
         "text" => "#{socket.assigns.user.username} disconnected"}
   end
 
   def handle_info({:after_join, room}, socket) do
-    broadcast socket, "event",
+    past_logs =
+      from r in Room,
+      where: r.name == ^room,
+      order_by: [asc: r.inserted_at],
+      select: r.content
+
+    push socket, "sync", %{past_logs: Repo.all(past_logs)}
+
+    broadcast_and_log socket, "event",
       %{"timestamp" => timestamp,
         "text" => "#{socket.assigns.user.username} has joined ##{room}"}
 
@@ -35,17 +45,20 @@ defmodule Chatter.RoomChannel do
                 "timestamp" => timestamp,
                 "author" => socket.assigns.user.username}
 
-    broadcast socket, "shout", message
+    broadcast_and_log socket, "shout", message
 
     {:noreply, socket}
   end
 
-  # This is invoked every time a notification is being broadcast
-  # to the client. The default implementation is just to push it
-  # downstream but one could filter or change the event.
-  def handle_out(event, payload, socket) do
-    push socket, event, payload
-    {:noreply, socket}
+  defp broadcast_and_log(socket, type, payload) do
+    "rooms:" <> room = socket.topic
+
+    Repo.insert! %Room{
+      name: room,
+      content: %{"type" => type, "payload" => payload},
+    }
+
+    broadcast socket, type, payload
   end
 
   defp timestamp do

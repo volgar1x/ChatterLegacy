@@ -36,6 +36,18 @@ export function startJoiningRoom(room) {
       dispatch(joinRoom(room, channel));
       dispatch(focusRoom(room));
 
+      channel.on('sync', ({past_logs}) => {
+        for (const past_log of past_logs) {
+          switch (past_log.type) {
+            case 'event':
+              dispatch(receiveEvent(room, past_log.payload));
+              break;
+            case 'shout':
+              dispatch(receiveMessage(room, past_log.payload));
+              break;
+          }
+        }
+      });
       channel.on('event', event => dispatch(receiveEvent(room, event)));
       channel.on('shout', message => dispatch(receiveMessage(room, message)));
     });
