@@ -23,10 +23,19 @@ class ConnectForm extends React.Component {
         <form style={styles.form} onSubmit={this.onSubmit}>
 
           <div style={styles.inputGroup}>
-            <label htmlFor="username" style={styles.label}>Username</label>
-            <input type="text" required
-                   id="username"
-                   value={this.state.username}
+            <label htmlFor="email" style={styles.label}>Email</label>
+            <input type="email" required
+                   id="email"
+                   value={this.state.email}
+                   onChange={this.onChange}
+                   style={styles.input}/>
+          </div>
+
+          <div style={styles.inputGroup}>
+            <label htmlFor="password" style={styles.label}>Password</label>
+            <input type="password" required
+                   id="password"
+                   value={this.state.password}
                    onChange={this.onChange}
                    style={styles.input}/>
           </div>
@@ -61,8 +70,12 @@ class ConnectForm extends React.Component {
     if (window.localStorage) {
       window.localStorage['ConnectForm'] = JSON.stringify(this.state);
     }
-    
-    this.props.connect(`ws://${this.state.server}/socket`, this.state.username);
+
+    this.props.connect(
+      `ws://${this.state.server}/socket`,
+      this.state.email,
+      this.state.password
+    );
 
     return false;
   };

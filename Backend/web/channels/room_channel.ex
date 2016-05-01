@@ -11,19 +11,19 @@ defmodule Chatter.RoomChannel do
   def terminate({:shutdown, :left}, socket) do
     broadcast socket, "event",
       %{"timestamp" => timestamp,
-        "text" => "#{socket.assigns.username} has left"}
+        "text" => "#{socket.assigns.user.username} has left"}
   end
 
   def terminate(_, socket) do
     broadcast socket, "event",
       %{"timestamp" => timestamp,
-        "text" => "#{socket.assigns.username} disconnected"}
+        "text" => "#{socket.assigns.user.username} disconnected"}
   end
 
   def handle_info({:after_join, room}, socket) do
     broadcast socket, "event",
       %{"timestamp" => timestamp,
-        "text" => "#{socket.assigns.username} has joined ##{room}"}
+        "text" => "#{socket.assigns.user.username} has joined ##{room}"}
 
     {:noreply, socket}
   end
@@ -33,7 +33,7 @@ defmodule Chatter.RoomChannel do
   def handle_in("shout", %{"text" => text}, socket) do
     message = %{"text" => text,
                 "timestamp" => timestamp,
-                "author" => socket.assigns.username}
+                "author" => socket.assigns.user.username}
 
     broadcast socket, "shout", message
 

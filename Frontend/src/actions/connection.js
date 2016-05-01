@@ -22,11 +22,11 @@ export function connectionError(event) {
   return {type: CONNECTION_ERROR, event};
 }
 
-export function connect(url, username) {
+export function connect(url, email, password) {
   return dispatch => {
     dispatch(connecting());
 
-    let socket = new Socket(url, {params: {username}});
+    let socket = new Socket(url, {params: {email, password}});
 
     socket.onOpen(() => {
       dispatch(connected(socket));

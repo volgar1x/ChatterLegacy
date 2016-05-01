@@ -1,6 +1,9 @@
 defmodule Chatter.UserSocket do
   use Phoenix.Socket
 
+  alias Chatter.User
+  alias Chatter.Repo
+
   ## Channels
   channel "rooms:*", Chatter.RoomChannel
 
@@ -19,15 +22,17 @@ defmodule Chatter.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(%{"username" => username}, socket) when byte_size(username) > 0 do
-    socket
-    |> assign(:username, username)
-    |> ok
-  end
-  def connect(_params, socket) do
-    socket
-    |> assign(:username, "User-#{:random.uniform(1000)}")
-    |> ok
+  def connect(%{"email" => email, "password" => password}, socket) do
+    case Repo.get_by(User, email: email) do
+      nil -> :error
+
+      user ->
+        if User.valid_password?(user, password) do
+          {:ok, assign(socket, :user, user)}
+        else
+          :error
+        end
+    end
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:
