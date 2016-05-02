@@ -1,7 +1,7 @@
 import React from 'react';
 import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
+import { Link, routerShape } from 'react-router';
 
 import * as RoomActions from '../actions/rooms';
 
@@ -62,11 +62,42 @@ class JoinModal extends React.Component {
   };
 }
 
-const Room = ({ label, room }) => (
-  <Link to={`/rooms/${room}`} style={styles.room} activeStyle={styles.currentRoom}>
-    #{label || room}
-  </Link>
-);
+class Room extends React.Component {
+  static contextTypes = {
+    router: routerShape,
+  };
+
+  static defaultProps = {
+    onLeave() {},
+  };
+
+  render() {
+    const {label, room, onLeave} = this.props;
+    const {router} = this.context;
+
+    const path = `/rooms/${room}`;
+
+    const activeStyle =
+      router && router.isActive(path)
+      ? styles.currentRoom
+      : {};
+
+    return (
+      <div style={styles.roomBtn}>
+        <Link to={path} style={{...styles.room, ...styles.roomLeft, ...activeStyle}}>
+          #{label || room}
+        </Link>
+        <a href="#" onClick={this.onLeave} style={{...styles.room, ...styles.roomRight, ...activeStyle}}>x</a>
+      </div>
+    );
+  }
+
+  onLeave = (e) => {
+    e.preventDefault();
+    this.props.onLeave(this.props.room);
+    return false;
+  };
+}
 
 class RoomList extends React.Component {
   state = {
@@ -86,7 +117,7 @@ class RoomList extends React.Component {
   }
 
   renderRoom = (room, key) => {
-    return <Room key={key} room={room}/>;
+    return <Room key={key} room={room} onLeave={this.onLeave}/>;
   };
 
   onStartJoining = (e) => {
@@ -100,6 +131,10 @@ class RoomList extends React.Component {
       this.props.startJoiningRoom(room);
     }
   };
+
+  onLeave = (room) => {
+    this.props.startLeavingRoom(room);
+  };
 }
 
 const styles = {
@@ -110,13 +145,23 @@ const styles = {
     flexWrap: 'wrap',
     padding: '6px',
   },
+  roomBtn: {
+    marginRight: '0.3em',
+  },
   room: {
     padding: '0.3em',
     background: 'silver',
-    borderRadius: '2px',
-    marginRight: '0.3em',
     color: 'black',
     textDecoration: 'none',
+    float: 'left',
+  },
+  roomLeft: {
+    borderTopLeftRadius: '2px',
+    borderBottomLeftRadius: '2px',
+  },
+  roomRight: {
+    borderTopRightRadius: '2px',
+    borderBottomRightRadius: '2px',
   },
   currentRoom: {
     background: '#85e0ff',
