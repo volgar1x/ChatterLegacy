@@ -3,8 +3,7 @@ import { replace } from 'react-router-redux';
 export const JOIN_ROOM = 'JOIN_ROOM';
 export const LEAVE_ROOM = 'LEAVE_ROOM';
 export const FOCUS_ROOM = 'FOCUS_ROOM';
-export const RECEIVE_MESSAGE = 'RECEIVE_MESSAGE';
-export const RECEIVE_EVENT = 'RECEIVE_EVENT';
+export const RECEIVE = 'RECEIVE';
 export const RECEIVE_MANY = 'RECEIVE_MANY';
 
 export function joinRoom(room, channel) {
@@ -19,16 +18,12 @@ export function focusRoom(room) {
   return replace(`/rooms/${room}`);
 }
 
-export function receiveMessage(room, message) {
-  return { type: RECEIVE_MESSAGE, room, message };
+export function receive(room, payload) {
+  return { type: RECEIVE, room, payload };
 }
 
-export function receiveEvent(room, event) {
-  return { type: RECEIVE_EVENT, room, event };
-}
-
-export function receiveMany(room, logs) {
-  return { type: RECEIVE_MANY, room, logs };
+export function receiveMany(room, payloads) {
+  return { type: RECEIVE_MANY, room, payloads };
 }
 
 export function startJoiningRoom(room) {
@@ -40,9 +35,8 @@ export function startJoiningRoom(room) {
       dispatch(joinRoom(room, channel));
       dispatch(focusRoom(room));
 
-      channel.on('sync', ({past_logs}) => dispatch(receiveMany(room, past_logs)));
-      channel.on('event', event => dispatch(receiveEvent(room, event)));
-      channel.on('shout', message => dispatch(receiveMessage(room, message)));
+      channel.on('sync', ({payloads}) => dispatch(receiveMany(room, payloads)));
+      channel.on('payload', payload => dispatch(receive(room, payload)));
     });
   };
 }

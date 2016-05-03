@@ -23,7 +23,7 @@ class List extends React.Component {
   }
 
   renderItem = (item, key) => {
-    let Item = itemComponents[item.item];
+    let Item = itemComponents[item.type];
     let child;
     if (typeof Item !== 'undefined') {
       child = <Item {...item}/>

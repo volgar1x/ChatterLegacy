@@ -11,28 +11,31 @@ defmodule Chatter.RoomChannel do
   end
 
   def terminate({:shutdown, :left}, socket) do
-    broadcast_and_log socket, "event",
-      %{"timestamp" => timestamp,
+    broadcast_and_log socket,
+      %{"type" => "event",
+        "timestamp" => timestamp,
         "text" => "#{socket.assigns.user.username} has left"}
   end
 
   def terminate(_, socket) do
-    broadcast_and_log socket, "event",
-      %{"timestamp" => timestamp,
+    broadcast_and_log socket,
+      %{"type" => "event",
+        "timestamp" => timestamp,
         "text" => "#{socket.assigns.user.username} disconnected"}
   end
 
   def handle_info({:after_join, room}, socket) do
-    past_logs =
+    payloads =
       from r in Room,
       where: r.name == ^room,
       order_by: [asc: r.inserted_at],
       select: r.content
 
-    push socket, "sync", %{past_logs: Repo.all(past_logs)}
+    push socket, "sync", %{payloads: Repo.all(payloads)}
 
-    broadcast_and_log socket, "event",
-      %{"timestamp" => timestamp,
+    broadcast_and_log socket,
+      %{"type" => "event",
+        "timestamp" => timestamp,
         "text" => "#{socket.assigns.user.username} has joined ##{room}"}
 
     {:noreply, socket}
@@ -41,24 +44,25 @@ defmodule Chatter.RoomChannel do
   # It is also common to receive messages from the client and
   # broadcast to everyone in the current topic (rooms:lobby).
   def handle_in("shout", %{"text" => text}, socket) do
-    message = %{"text" => text,
+    message = %{"type" => "message",
+                "text" => text,
                 "timestamp" => timestamp,
                 "author" => socket.assigns.user.username}
 
-    broadcast_and_log socket, "shout", message
+    broadcast_and_log socket, message
 
     {:noreply, socket}
   end
 
-  defp broadcast_and_log(socket, type, payload) do
+  defp broadcast_and_log(socket, payload) do
     "rooms:" <> room = socket.topic
 
     Repo.insert! %Room{
       name: room,
-      content: %{"type" => type, "payload" => payload},
+      content: payload,
     }
 
-    broadcast socket, type, payload
+    broadcast socket, "payload", payload
   end
 
   defp timestamp do
