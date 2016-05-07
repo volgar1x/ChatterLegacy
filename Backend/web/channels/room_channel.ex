@@ -11,6 +11,10 @@ defmodule Chatter.RoomChannel do
   end
 
   def terminate({:shutdown, :left}, socket) do
+    broadcast socket, "who", %{
+      "user_id" => socket.assigns.user.id,
+      "entering" => false}
+
     broadcast_and_log socket,
       %{"type" => "event",
         "timestamp" => timestamp,
@@ -18,6 +22,10 @@ defmodule Chatter.RoomChannel do
   end
 
   def terminate(_, socket) do
+    broadcast socket, "who", %{
+      "user_id" => socket.assigns.user.id,
+      "entering" => false}
+
     broadcast_and_log socket,
       %{"type" => "event",
         "timestamp" => timestamp,
@@ -25,6 +33,12 @@ defmodule Chatter.RoomChannel do
   end
 
   def handle_info({:after_join, room}, socket) do
+    :ets.insert(Chatter.RoomChannel.RoomPresence, {room, socket.assigns.user.id})
+
+    broadcast socket, "who", %{
+      "user_id" => socket.assigns.user.id,
+      "entering" => true}
+
     payloads =
       from r in Room,
       where: r.name == ^room,
@@ -52,6 +66,21 @@ defmodule Chatter.RoomChannel do
     broadcast_and_log socket, message
 
     {:noreply, socket}
+  end
+
+  def handle_in("who", _, socket) do
+    room = socket.topic
+
+    user_ids =
+      :ets.lookup(Chatter.RoomChannel.RoomPresence, room)
+      |> Enum.map(fn {^room, user_id} -> user_id end)
+
+    users =
+      from u in User,
+      where: u.id in ^user_ids,
+      select: u
+
+    {:reply, {:ok, users}, socket}
   end
 
   defp broadcast_and_log(socket, payload) do
