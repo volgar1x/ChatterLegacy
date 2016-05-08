@@ -7,6 +7,8 @@ import {
   FOCUS_ROOM,
   RECEIVE,
   RECEIVE_MANY,
+  USER_JOIN,
+  USER_LEAVE,
 } from '../actions/rooms';
 
 const initial = Map();
@@ -21,6 +23,7 @@ export default function rooms(state = initial, action) {
       return state.set(action.room, Map({
         channel: action.channel,
         feed: List(),
+        users: Map(),
       }));
 
     case LEAVE_ROOM:
@@ -35,6 +38,12 @@ export default function rooms(state = initial, action) {
         feed => action.payloads.reduce(
           (acc, x) => acc.push(sanitizePayload(x)),
           feed));
+
+    case USER_JOIN:
+      return state.setIn([action.room, 'users', action.user.id], action.user);
+
+    case USER_LEAVE:
+      return state.deleteIn([action.room, 'users', action.userId]);
   }
 
   return state;

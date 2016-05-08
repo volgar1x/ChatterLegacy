@@ -5,6 +5,7 @@ defmodule Chatter.RoomChannel do
   alias Chatter.Room
 
   def join("rooms:" <> room, _params, socket) do
+    :ets.insert(Chatter.RoomChannel.RoomPresence, {room, socket.assigns.user.id})
     send self, {:after_join, room}
 
     {:ok, socket}
@@ -33,8 +34,6 @@ defmodule Chatter.RoomChannel do
   end
 
   def handle_info({:after_join, room}, socket) do
-    :ets.insert(Chatter.RoomChannel.RoomPresence, {room, socket.assigns.user.id})
-
     broadcast socket, "who", %{
       "user_id" => socket.assigns.user.id,
       "entering" => true}
@@ -69,18 +68,18 @@ defmodule Chatter.RoomChannel do
   end
 
   def handle_in("who", _, socket) do
-    room = socket.topic
+    "rooms:" <> room = socket.topic
 
     user_ids =
       :ets.lookup(Chatter.RoomChannel.RoomPresence, room)
       |> Enum.map(fn {^room, user_id} -> user_id end)
 
     users =
-      from u in User,
+      from u in Chatter.User,
       where: u.id in ^user_ids,
       select: u
 
-    {:reply, {:ok, users}, socket}
+    {:reply, {:ok, %{"users" => Repo.all(users)}}, socket}
   end
 
   defp broadcast_and_log(socket, payload) do

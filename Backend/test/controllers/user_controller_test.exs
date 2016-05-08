@@ -1,7 +1,6 @@
 defmodule Chatter.UserControllerTest do
   use Chatter.ConnCase
 
-  alias Chatter.User
   @valid_attrs %{}
   @invalid_attrs %{}
 
@@ -9,5 +8,5 @@ defmodule Chatter.UserControllerTest do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
   end
 
-  
+
 end

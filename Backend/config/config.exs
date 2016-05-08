@@ -37,4 +37,5 @@ config :ex_admin,
   modules: [
     Chatter.ExAdmin.Dashboard,
     Chatter.ExAdmin.User,
+    Chatter.ExAdmin.Room,
   ]

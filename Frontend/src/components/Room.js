@@ -8,6 +8,7 @@ import MessageList from '../components/messages/List';
 import Loading from '../components/Loading';
 import ConnectForm from '../components/ConnectForm';
 import RoomList from '../components/RoomList';
+import UserList from '../components/UserList';
 
 class App extends React.Component {
   render() {
@@ -18,14 +19,16 @@ class App extends React.Component {
     }
 
     const feed = room.get('feed');
+    const users = room.get('users').valueSeq();
 
     return (
       <div style={styles.container}>
         <div style={styles.rooms}>
           <RoomList/>
         </div>
-        <div style={styles.messages}>
-          <MessageList feed={feed}/>
+        <div style={styles.body}>
+          <div style={styles.users}><UserList users={users}/></div>
+          <div style={styles.messages}><MessageList feed={feed}/></div>
         </div>
         <div style={styles.input}>
           <MessageInput/>
@@ -46,8 +49,15 @@ const styles = {
   input: {
     borderTop: '1px solid black',
   },
-  messages: {
+  body: {
     flex: 1,
+    display: 'flex',
+  },
+  users: {
+    width: '30%',
+  },
+  messages: {
+    flex:1,
     overflow: 'scroll',
   },
 };

@@ -15,8 +15,6 @@ defmodule Chatter do
       # worker(Chatter.Worker, [arg1, arg2, arg3]),
     ]
 
-    :ets.new(Chatter.RoomChannel.RoomPresence, [:named_table, :bag])
-
     # See http://elixir-lang.org/docs/stable/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Chatter.Supervisor]
