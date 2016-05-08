@@ -109,7 +109,7 @@ class RoomList extends React.Component {
       <div style={styles.container}>
         {this.props.rooms.map(this.renderRoom)}
 
-        <a href="#" onClick={this.onStartJoining} style={styles.room}>+</a>
+        <a href="#" onClick={this.onStartJoining} style={styles.joinRoom}>Join</a>
 
         <JoinModal showing={this.state.joinRequested} onSubmit={this.onJoin}/>
       </div>
@@ -154,8 +154,6 @@ const styles = {
     color: 'black',
     textDecoration: 'none',
     float: 'left',
-    borderRadius: '15px',
-    // padding: '0 10px 0 10px',
   },
   roomLeft: {
     borderRadius: 0,
@@ -186,6 +184,10 @@ const styles = {
       justifyContent: 'space-around',
       padding: '2em',
     },
+  },
+  joinRoom: {
+    padding: '0.3em 10px 0.3em 10px',
+    float: 'left',
   },
 };
 
