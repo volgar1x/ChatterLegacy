@@ -6,6 +6,8 @@ defmodule Chatter do
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
+    :ets.new(Chatter.RoomChannel.RoomPresence, [:public, :named_table, :bag])
+
     children = [
       # Start the endpoint when the application starts
       supervisor(Chatter.Endpoint, []),

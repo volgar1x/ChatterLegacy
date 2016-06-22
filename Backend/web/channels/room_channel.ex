@@ -5,15 +5,19 @@ defmodule Chatter.RoomChannel do
   alias Chatter.Room
 
   def join("rooms:" <> room, _params, socket) do
-    :ets.insert(Chatter.RoomChannel.RoomPresence, {room, socket.assigns.user.id})
     send self, {:after_join, room}
 
     {:ok, socket}
   end
 
-  def terminate({:shutdown, :left}, socket) do
+  def terminate(_, socket) do
+    "rooms:" <> room = socket.topic
+    user_id = socket.assigns.user.id
+
+    :ets.delete_object(Chatter.RoomChannel.RoomPresence, {room, user_id})
+
     broadcast socket, "who", %{
-      "user_id" => socket.assigns.user.id,
+      "user_id" => user_id,
       "entering" => false}
 
     broadcast_and_log socket,
@@ -22,20 +26,13 @@ defmodule Chatter.RoomChannel do
         "text" => "#{socket.assigns.user.username} has left"}
   end
 
-  def terminate(_, socket) do
-    broadcast socket, "who", %{
-      "user_id" => socket.assigns.user.id,
-      "entering" => false}
-
-    broadcast_and_log socket,
-      %{"type" => "event",
-        "timestamp" => timestamp,
-        "text" => "#{socket.assigns.user.username} disconnected"}
-  end
-
   def handle_info({:after_join, room}, socket) do
+    user_id = socket.assigns.user.id
+
+    :ets.insert(Chatter.RoomChannel.RoomPresence, {room, user_id})
+
     broadcast socket, "who", %{
-      "user_id" => socket.assigns.user.id,
+      "user_id" => user_id,
       "entering" => true}
 
     payloads =

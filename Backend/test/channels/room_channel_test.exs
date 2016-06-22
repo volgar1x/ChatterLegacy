@@ -4,20 +4,22 @@ defmodule Chatter.RoomChannelTest do
   alias Chatter.User
   alias Chatter.RoomChannel
 
-  setup do
-    :ets.new(Chatter.RoomChannel.RoomPresence, [:public, :named_table, :bag])
-
+  setup_all do
     user =
       %User{}
       |> User.changeset(%{username: "test", firstname: "test", lastname: "test", email: "test@test", password: "test"})
       |> User.encrypt_password
       |> Repo.insert!
 
+    {:ok, user: user}
+  end
+
+  setup %{user: user} do
     {:ok, _, socket} =
       socket("user_id", %{user: user})
       |> subscribe_and_join(RoomChannel, "rooms:lobby")
 
-    {:ok, socket: socket, user: user}
+    {:ok, socket: socket}
   end
 
   test "shout broadcasts to rooms:lobby", %{socket: socket} do
@@ -30,9 +32,9 @@ defmodule Chatter.RoomChannelTest do
     assert_push "broadcast", %{"text" => "data"}
   end
 
-  test "who", %{socket: socket, user: user} do
+  test "who", %{socket: socket} do
     ref = push socket, "who"
-    users = [user]
-    assert_reply ref, :ok, %{"users" => ^users}
+    assert_reply ref, :ok, %{"users" => [%{username: "test"}]}
+    assert [{"lobby", _}] = :ets.lookup(Chatter.RoomChannel.RoomPresence, "lobby")
   end
 end
